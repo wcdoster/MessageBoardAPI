@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {  
+  id    String     @id @unique @default(uuid())  
+  username  String  
+  email String  @unique  
+  createdAt DateTime   @default(now())
+  boards Board[]
+  posts Post[]
+  comments Comment[]
+  upvotes Upvote[]
+  downvotes Downvote[]
+} 
+
+model Board {
+  id    String     @id @unique @default(uuid())
+  title  String
+  description String
+  createdBy User  @relation(fields: [createdByUserId], references: [id])
+  createdByUserId String
+  createdAt DateTime   @default(now())
+  posts Post[]
+}
+
+model Post {
+  id    String     @id @unique @default(uuid())
+  title  String
+  description String
+  createdBy User  @relation(fields: [createdByUserId], references: [id])
+  createdByUserId String
+  createdAt DateTime   @default(now())
+  board Board  @relation(fields: [boardId], references: [id])
+  boardId String
+  comments Comment[]
+}
+
+model Comment {
+  id    String     @id @unique @default(uuid())
+  text String
+  createdBy User  @relation(fields: [createdByUserId], references: [id])
+  createdByUserId String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime?
+  post Post  @relation(fields: [postId], references: [id])
+  postId String
+  parentComment Comment @relation("subComments",fields: [parentCommentId], references: [id])
+  parentCommentId String
+  subComments Comment[] @relation("subComments")
+  upvotes Upvote[]
+  downvotes Downvote[]
+}
+
+model Upvote {
+  id String  @id @unique @default(uuid())
+  createdBy User  @relation(fields: [createdByUserId], references: [id])
+  createdByUserId String
+  createdAt DateTime   @default(now())
+  comment Comment @relation(fields: [commentId], references: [id])
+  commentId String
+}
+
+model Downvote {
+  id String  @id @unique @default(uuid())
+  createdBy User  @relation(fields: [createdByUserId], references: [id])
+  createdByUserId String
+  createdAt DateTime   @default(now())
+  comment Comment @relation(fields: [commentId], references: [id])
+  commentId String
+}
