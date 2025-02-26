@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../index";
+import { jwtDecode } from "jwt-decode";
 
 const getUserById = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -13,22 +14,6 @@ const getUserById = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const createUser = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { username, email } = req.body;
-    const newUser = await prisma.user.create({
-      data: {
-        email,
-        username,
-      },
-    });
-    res.status(200).json(newUser);
-  } catch (e) {
-    res.status(500).json({ error: e });
-  }
-};
-
 export default {
-  createUser,
   getUserById,
 };

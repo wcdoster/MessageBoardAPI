@@ -1,5 +1,6 @@
 import express, { Express, Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import AuthController from "@controllers/AuthController";
 const dotenv = require("dotenv");
 const cors = require("cors");
 const users = require("./routes/users");
@@ -15,7 +16,7 @@ const app: Express = express();
 const port = process.env.PORT ?? 3000;
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: "http://localhost:3000",
 };
 
 const main = async (): Promise<void> => {
@@ -28,6 +29,10 @@ const main = async (): Promise<void> => {
   app.get("/", (req: Request, res: Response) => {
     res.send("Express + TypeScript Server");
   });
+
+  //auth routes
+  app.post("/register", AuthController.register);
+  app.post("/login", AuthController.login);
 
   // router routes
   app.use("/users", users as Router);
