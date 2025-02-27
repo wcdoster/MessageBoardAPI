@@ -1,11 +1,25 @@
 import { Request, Response } from "express";
 import { prisma } from "../index";
+import { CustomRequest } from "src/middleware/authMiddleware";
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, email, password } = req.body;
+    const duplicateEmail = await prisma.user.findUnique({
+      where: { email },
+    });
+    const duplicateUsername = await prisma.user.findUnique({
+      where: { username },
+    });
+    if (duplicateEmail || duplicateUsername) {
+      res.status(409).json({
+        email: Boolean(duplicateEmail),
+        username: Boolean(duplicateUsername),
+      });
+      return;
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: {
@@ -26,7 +40,6 @@ const register = async (req: Request, res: Response): Promise<void> => {
 const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
-    console.log(req.body);
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -49,4 +62,24 @@ const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default { register, login };
+const verifyToken = async (
+  req: CustomRequest,
+  res: Response
+): Promise<void> => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    res.status(401).send("Access denied. No token provided.");
+    return;
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    req.user = decoded;
+    res.status(200).send("Token validated.");
+  } catch (error) {
+    res.status(400).send("Invalid token.");
+    return;
+  }
+};
+
+export default { register, login, verifyToken };

@@ -1,10 +1,10 @@
 import { Router } from "express";
 import PostController from "@controllers/PostController";
-import { verifyToken } from "src/middleware/authMiddleware";
+import { verifyTokenMiddleware } from "src/middleware/authMiddleware";
 
 const router: Router = Router();
 
 router.get("/:id", PostController.getPostById);
-router.post("/", verifyToken, PostController.createPost);
+router.post("/", verifyTokenMiddleware, PostController.createPost);
 
 module.exports = router as Router;

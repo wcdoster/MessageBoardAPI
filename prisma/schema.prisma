@@ -21,6 +21,7 @@ model User {
   comments Comment[]
   upvotes Upvote[]
   downvotes Downvote[]
+  joinedBoards BoardsUsers[]
 } 
 
 model Board {
@@ -31,6 +32,7 @@ model Board {
   createdByUserId String
   createdAt DateTime   @default(now())
   posts Post[]
+  members BoardsUsers[]
 }
 
 model Post {
@@ -77,4 +79,13 @@ model Downvote {
   createdAt DateTime   @default(now())
   comment Comment @relation(fields: [commentId], references: [id])
   commentId String
+}
+
+model BoardsUsers{
+  id String  @id @unique @default(uuid())
+  member User  @relation(fields: [memberId], references: [id])
+  memberId String
+  createdAt DateTime   @default(now())
+  boardId String
+  board Board @relation(fields: [boardId], references: [id])
 }

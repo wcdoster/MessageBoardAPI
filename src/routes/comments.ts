@@ -1,13 +1,16 @@
 import { Router } from "express";
 import CommentController from "@controllers/CommentController";
-import { verify } from "crypto";
-import { verifyToken } from "src/middleware/authMiddleware";
+import { verifyTokenMiddleware } from "src/middleware/authMiddleware";
 
 const router: Router = Router();
 
 router.get("/:id", CommentController.getCommentById);
-router.post("/", verifyToken, CommentController.createComment);
-router.put("/", verifyToken, CommentController.updateCommentById);
-router.delete("/:id", verifyToken, CommentController.deleteCommentById);
+router.post("/", verifyTokenMiddleware, CommentController.createComment);
+router.put("/", verifyTokenMiddleware, CommentController.updateCommentById);
+router.delete(
+  "/:id",
+  verifyTokenMiddleware,
+  CommentController.deleteCommentById
+);
 
 module.exports = router as Router;

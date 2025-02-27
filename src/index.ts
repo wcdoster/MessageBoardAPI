@@ -33,6 +33,7 @@ const main = async (): Promise<void> => {
   //auth routes
   app.post("/register", AuthController.register);
   app.post("/login", AuthController.login);
+  app.post("/verify-token", AuthController.verifyToken);
 
   // router routes
   app.use("/users", users as Router);
