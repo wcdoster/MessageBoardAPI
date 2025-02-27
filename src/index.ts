@@ -7,6 +7,7 @@ const users = require("./routes/users");
 const boards = require("./routes/boards");
 const posts = require("./routes/posts");
 const comments = require("./routes/comments");
+const members = require("./routes/members");
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ const main = async (): Promise<void> => {
   app.use("/boards", boards as Router);
   app.use("/posts", posts as Router);
   app.use("/comments", comments as Router);
+  app.use("/members", members as Router);
 
   app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
