@@ -13,14 +13,9 @@ interface GetAllBoardsResponse {
 
 const getAllBoards = async (req: Request, res: Response): Promise<void> => {
   try {
-    const boardData: GetAllBoardsResponse[] =
-      await prisma.$queryRaw`SELECT board.*, COUNT(user.id) as memberCount FROM board LEFT JOIN boardsUsers ON board.id = boardsUsers.boardId FULL OUTER JOIN user ON boardsUsers.memberID = user.id WHERE board.id IS NOT NULL GROUP BY board.id
-     `;
-    const boards = boardData.map((x) => ({
-      ...x,
-      memberCount: parseInt(x.memberCount.toString()),
-    }));
-
+    const boards = await prisma.board.findMany({
+      include: { _count: { select: { members: true, posts: true } } },
+    });
     res.status(200).send(JSON.stringify(boards));
   } catch (e) {
     res.status(500).json({ error: e });
@@ -39,15 +34,10 @@ const getBoardById = async (req: Request, res: Response): Promise<void> => {
             username: true,
           },
         },
+        _count: { select: { members: true, posts: true } },
       },
     });
-    const memberTotal = await prisma.board.findUnique({
-      where: { id },
-    });
-    res.status(200).json({
-      ...board,
-      memberTotal: memberTotal,
-    });
+    res.status(200).json(board);
   } catch (e) {
     res.status(500).json({ error: e });
   }
@@ -59,13 +49,11 @@ const getBoardsByCreateByUserId = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const boardData: GetAllBoardsResponse[] =
-      await prisma.$queryRaw`SELECT board.*, COUNT(user.id) as memberCount FROM board LEFT JOIN boardsUsers ON board.id = boardsUsers.boardId FULL OUTER JOIN user ON boardsUsers.memberID = user.id WHERE board.createdByUserId = ${id} GROUP BY board.id
-    `;
-    const boards = boardData.map((x) => ({
-      ...x,
-      memberCount: parseInt(x.memberCount.toString()),
-    }));
+    const boards = await prisma.board.findMany({
+      include: { _count: { select: { members: true, posts: true } } },
+      where: { createdByUserId: id },
+    });
+    console.log(boards);
     res.status(200).json(boards);
   } catch (e) {
     res.status(500).json({ error: e });
@@ -78,13 +66,11 @@ const getBoardsByMemberId = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const boardData: GetAllBoardsResponse[] =
-      await prisma.$queryRaw`SELECT board.*, COUNT(user.id) as memberCount FROM board LEFT JOIN boardsUsers ON board.id = boardsUsers.boardId FULL OUTER JOIN user ON boardsUsers.memberID = user.id WHERE user.id = ${id} GROUP BY board.id
-    `;
-    const boards = boardData.map((x) => ({
-      ...x,
-      memberCount: parseInt(x.memberCount.toString()),
-    }));
+    const boards = await prisma.board.findMany({
+      include: { _count: { select: { members: true, posts: true } } },
+      where: { members: { some: { memberId: id } } },
+    });
+    console.log(boards);
     res.status(200).json(boards);
   } catch (e) {
     res.status(500).json({ error: e });
@@ -108,6 +94,7 @@ const getPostsByBoardId = async (
             username: true,
           },
         },
+        _count: { select: { comments: true } },
       },
     });
     res.status(200).json(posts);

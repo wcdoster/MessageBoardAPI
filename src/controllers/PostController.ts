@@ -6,7 +6,10 @@ const getPostById = async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id;
     const board = await prisma.post.findUnique({
       where: { id },
-      include: { createdBy: { select: { id: true, username: true } } },
+      include: {
+        createdBy: { select: { id: true, username: true } },
+        _count: { select: { comments: true } },
+      },
     });
     res.status(200).json(board);
   } catch (e) {
@@ -17,7 +20,6 @@ const getPostById = async (req: Request, res: Response): Promise<void> => {
 const createPost = async (req: Request, res: Response): Promise<void> => {
   try {
     const { title, createdByUserId, description, boardId } = req.body;
-    console.log(req.body);
     const newPost = await prisma.post.create({
       data: {
         description,
@@ -26,7 +28,6 @@ const createPost = async (req: Request, res: Response): Promise<void> => {
         createdByUserId,
       },
     });
-    console.log({ newPost });
     res.status(200).json(newPost);
   } catch (e) {
     res.status(500).json({ error: e });
