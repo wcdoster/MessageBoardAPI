@@ -4,14 +4,32 @@ import { prisma } from "../index";
 const getPostById = async (req: Request, res: Response): Promise<void> => {
   try {
     const id = req.params.id;
-    const board = await prisma.post.findUnique({
+    const post = await prisma.post.findUnique({
       where: { id },
       include: {
         createdBy: { select: { id: true, username: true } },
+        board: {
+          include: {
+            _count: { select: { members: true, posts: true } },
+            createdBy: { select: { id: true, username: true } },
+          },
+        },
+        comments: {
+          select: {
+            _count: { select: { upvotes: true, downvotes: true } },
+            createdAt: true,
+            createdBy: { select: { username: true } },
+            id: true,
+            text: true,
+            updatedAt: true,
+            parentCommentId: true,
+          },
+        },
         _count: { select: { comments: true } },
       },
     });
-    res.status(200).json(board);
+    console.log(post);
+    res.status(200).json(post);
   } catch (e) {
     res.status(500).json({ error: e });
   }

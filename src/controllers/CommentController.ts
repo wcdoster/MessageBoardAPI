@@ -20,20 +20,22 @@ const createComment = async (req: Request, res: Response): Promise<void> => {
     const newComment = await prisma.comment.create({
       data: {
         text,
-        createdByUserId,
         parentCommentId,
         postId,
+        createdByUserId,
       },
     });
+    console.log({ newComment });
     res.status(200).json(newComment);
   } catch (e) {
+    console.log(e);
     res.status(500).json({ error: e });
   }
 };
 
 const updateCommentById = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const { text, id } = req.body;
@@ -52,7 +54,7 @@ const updateCommentById = async (
 
 const deleteCommentById = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const { id } = req.params;
@@ -67,5 +69,5 @@ export default {
   createComment,
   getCommentById,
   updateCommentById,
-  deleteCommentById
+  deleteCommentById,
 };

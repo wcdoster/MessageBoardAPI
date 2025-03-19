@@ -53,7 +53,6 @@ const getBoardsByCreateByUserId = async (
       include: { _count: { select: { members: true, posts: true } } },
       where: { createdByUserId: id },
     });
-    console.log(boards);
     res.status(200).json(boards);
   } catch (e) {
     res.status(500).json({ error: e });
@@ -70,7 +69,6 @@ const getBoardsByMemberId = async (
       include: { _count: { select: { members: true, posts: true } } },
       where: { members: { some: { memberId: id } } },
     });
-    console.log(boards);
     res.status(200).json(boards);
   } catch (e) {
     res.status(500).json({ error: e });
@@ -113,8 +111,15 @@ const createBoard = async (req: Request, res: Response): Promise<void> => {
         description,
       },
     });
+    await prisma.boardsUsers.create({
+      data: {
+        boardId: newBoard.id,
+        memberId: createdByUserId,
+      },
+    });
     res.status(200).json(newBoard);
   } catch (e) {
+    console.log(e)
     res.status(500).json({ error: e });
   }
 };

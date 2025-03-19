@@ -50,17 +50,17 @@ model Post {
 model Comment {
   id    String     @id @unique @default(uuid())
   text String
-  createdBy User  @relation(fields: [createdByUserId], references: [id])
-  createdByUserId String
   createdAt DateTime   @default(now())
   updatedAt DateTime?
   post Post  @relation(fields: [postId], references: [id])
   postId String
-  parentComment Comment @relation("subComments",fields: [parentCommentId], references: [id])
-  parentCommentId String
+  parentComment Comment? @relation("subComments",fields: [parentCommentId], references: [id])
+  parentCommentId String?
   subComments Comment[] @relation("subComments")
   upvotes Upvote[]
   downvotes Downvote[]
+  createdBy User  @relation(fields: [createdByUserId], references: [id])
+  createdByUserId String
 }
 
 model Upvote {
