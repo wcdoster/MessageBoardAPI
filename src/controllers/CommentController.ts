@@ -25,10 +25,8 @@ const createComment = async (req: Request, res: Response): Promise<void> => {
         createdByUserId,
       },
     });
-    console.log({ newComment });
     res.status(200).json(newComment);
   } catch (e) {
-    console.log(e);
     res.status(500).json({ error: e });
   }
 };

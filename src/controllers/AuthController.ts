@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { prisma } from "../index";
 import { CustomRequest } from "src/middleware/authMiddleware";
+import { prisma } from "../index";
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -57,14 +57,13 @@ const login = async (req: Request, res: Response): Promise<void> => {
     });
     res.status(200).json({ token, userId: user.id });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "Login failed" });
   }
 };
 
 const verifyToken = async (
   req: CustomRequest,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {

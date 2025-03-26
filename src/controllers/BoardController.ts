@@ -119,7 +119,6 @@ const createBoard = async (req: Request, res: Response): Promise<void> => {
     });
     res.status(200).json(newBoard);
   } catch (e) {
-    console.log(e)
     res.status(500).json({ error: e });
   }
 };

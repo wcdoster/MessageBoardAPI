@@ -28,7 +28,6 @@ const getPostById = async (req: Request, res: Response): Promise<void> => {
         _count: { select: { comments: true } },
       },
     });
-    console.log(post);
     res.status(200).json(post);
   } catch (e) {
     res.status(500).json({ error: e });
