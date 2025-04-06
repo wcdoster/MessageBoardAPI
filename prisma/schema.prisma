@@ -70,6 +70,7 @@ model Upvote {
   createdAt DateTime   @default(now())
   comment Comment @relation(fields: [commentId], references: [id])
   commentId String
+  @@unique ([commentId, createdByUserId])
 }
 
 model Downvote {
@@ -79,6 +80,7 @@ model Downvote {
   createdAt DateTime   @default(now())
   comment Comment @relation(fields: [commentId], references: [id])
   commentId String
+  @@unique ([commentId, createdByUserId])
 }
 
 model BoardsUsers{

@@ -63,9 +63,64 @@ const deleteCommentById = async (
   }
 };
 
+const createDownvote = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { createdByUserId, commentId } = req.body;
+    const newDownvote = await prisma.downvote.create({
+      data: {
+        commentId,
+        createdByUserId,
+      },
+    });
+    res.status(200).json(newDownvote);
+  } catch (e) {
+    console.log(e)
+    res.status(500).json({ error: e });
+  }
+};
+
+const createUpvote = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { createdByUserId, commentId } = req.body;
+    const newDownvote = await prisma.upvote.create({
+      data: {
+        commentId,
+        createdByUserId,
+      },
+    });
+    res.status(200).json(newDownvote);
+  } catch (e) {
+    res.status(500).json({ error: e });
+  }
+};
+
+const deleteDownvote = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    prisma.downvote.delete({ where: { id } });
+    res.status(200).json("Deleted");
+  } catch (e) {
+    res.status(500).json({ error: e });
+  }
+};
+
+const deleteUpvote = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    prisma.upvote.delete({ where: { id } });
+    res.status(200).json("Deleted");
+  } catch (e) {
+    res.status(500).json({ error: e });
+  }
+};
+
 export default {
   createComment,
   getCommentById,
   updateCommentById,
   deleteCommentById,
+  createDownvote,
+  createUpvote,
+  deleteDownvote,
+  deleteUpvote,
 };
